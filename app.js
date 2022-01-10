@@ -1,7 +1,7 @@
 
 const inquirer = require('inquirer');
-const { userInfo } = require('os');
-const { retry } = require('rxjs');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
+const generatePage = require('./src/page-template.js');
 
 
 const promptUser = () => {
@@ -23,8 +23,8 @@ const promptUser = () => {
         type: 'input',
         name: 'github',
         message: 'Enter your Github username (Required)',
-        validate: nameInput => {
-            if(nameInput){
+        validate: GitHubInput => {
+            if(GitHubInput){
                 return true;
             }else {
                 console.log('Please enter username');
@@ -88,8 +88,8 @@ return inquirer.prompt([
         type: 'input',
         name: 'description',
         message: 'Provide a description of the project (required)',
-        validate: nameInput => {
-            if(nameInput){
+        validate: descriptionInput => {
+            if(descriptionInput){
                 return true
             }else{
                 console.log('Please provide a description');
@@ -107,8 +107,8 @@ return inquirer.prompt([
         type: 'input',
         name: 'link',
         message: 'Enter the GitHub link to your project. (required)',
-        validate: nameInput => {
-            if(nameInput){
+        validate: linkInput => {
+            if(linkInput){
                 return true
             }else {
                 console.log('Please enter GitHub link');
@@ -142,48 +142,18 @@ return inquirer.prompt([
 promptUser()
 .then(promptProject)
 .then(portfolioData => {
-    console.log(portfolioData);
+    return generatePage(portfolioData);
+})
+.then(pageHtml => {
+    return writeFile(pageHtml);
+})
+.then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+})
+.then(copyFileResponse => {
+    console.log(copyFileResponse);
+})
+.catch(err => {
+    console.log(err);
 });
-
-// .then(projectAnswers => console.log(projectAnswers));
-
-// const fs = require('fs');
-// const generatePage = require('./src/page-template.js');
-
-// const pageHTML = generatePage(name, github);
-
-// const [name, github] = profileDataArgs;
-
-
-// fs.writeFile('./index.html', pageHTML, err => {
-//     if (err) throw err;
-
-//     console.log('Portfolio complete! Check out index.html to see the output!')
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const printProfileData = profileDataArr => {
-//     // This
-//     for (let i = 0; i < profileDataArr.length; i++) {
-//         console.log(profileDataArr[i]);
-//     }
-
-//     console.log('================');
-    
-//     // is the same as this...
-//     profileDataArr.forEach(profileItem => console.log(profileItem)); 
-    
-// }
-// printProfileData(profileDataArgs);
